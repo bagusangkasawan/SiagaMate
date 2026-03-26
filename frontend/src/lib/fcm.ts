@@ -134,19 +134,61 @@ export function hasNotificationPermission(): boolean {
  */
 export async function requestNotificationPermission(): Promise<boolean> {
   if (!('Notification' in window)) {
+    console.warn('Notifications not supported in this browser')
     return false
   }
 
   if (Notification.permission === 'granted') {
+    console.log('Notification permission already granted')
     return true
   }
 
   if (Notification.permission === 'denied') {
+    console.warn('Notification permission was denied. Please enable in browser settings.')
     return false
   }
 
-  const permission = await Notification.requestPermission()
-  return permission === 'granted'
+  // Ensure service worker is ready before requesting permission
+  try {
+    if ('serviceWorker' in navigator) {
+      await navigator.serviceWorker.ready
+      console.log('Service Worker is ready')
+    }
+  } catch (error) {
+    console.warn('Service Worker not available:', error)
+  }
+
+  // Request permission
+  try {
+    const permission = await Notification.requestPermission()
+    console.log('Notification permission result:', permission)
+    
+    if (permission === 'granted') {
+      // Attempt to subscribe to push notifications
+      try {
+        const registration = await navigator.serviceWorker.ready
+        if (VAPID_KEY && !registration.pushManager) {
+          console.warn('Push Manager not available')
+        } else if (VAPID_KEY) {
+          const subscription = await registration.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(VAPID_KEY)
+          })
+          const token = JSON.stringify(subscription)
+          await registerDeviceToken(token)
+          console.log('Successfully subscribed to push notifications')
+        }
+      } catch (pushError) {
+        console.warn('Failed to subscribe to push notifications:', pushError)
+        // Still return true because notification permission was granted
+      }
+    }
+    
+    return permission === 'granted'
+  } catch (error) {
+    console.error('Failed to request notification permission:', error)
+    return false
+  }
 }
 
 /**

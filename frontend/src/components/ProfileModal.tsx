@@ -51,21 +51,30 @@ export default function ProfileModal({
   // Notification state
   const [notificationEnabled, setNotificationEnabled] = useState(false)
   const [notificationLoading, setNotificationLoading] = useState(false)
+  const [notificationError, setNotificationError] = useState<string | null>(null)
 
   useEffect(() => {
     // Check if notifications are already enabled
     setNotificationEnabled(hasNotificationPermission())
+    setNotificationError(null)
   }, [])
 
   const handleNotificationToggle = async () => {
     if (notificationLoading) return
     
     setNotificationLoading(true)
+    setNotificationError(null)
+    
     try {
       const granted = await requestNotificationPermission()
       setNotificationEnabled(granted)
+      
+      if (!granted && Notification.permission === 'denied') {
+        setNotificationError('Izin notifikasi ditolak. Silakan aktifkan di pengaturan browser Anda.')
+      }
     } catch (error) {
       console.error('Failed to toggle notifications:', error)
+      setNotificationError('Tidak dapat mengaktifkan notifikasi. Coba lagi.')
     } finally {
       setNotificationLoading(false)
     }
@@ -280,12 +289,17 @@ export default function ProfileModal({
                       ? 'Notifikasi push bencana sudah diaktifkan' 
                       : 'Aktifkan untuk menerima alert real-time'}
                   </p>
+                  {notificationError && (
+                    <p className="mt-2 text-xs text-red-400 bg-red-500/10 rounded px-2 py-1">
+                      {notificationError}
+                    </p>
+                  )}
                 </div>
                 <button
                   type="button"
                   onClick={handleNotificationToggle}
                   disabled={notificationLoading}
-                  className={`rounded-lg px-4 py-2 text-sm font-medium transition-all ${
+                  className={`rounded-lg px-4 py-2 text-sm font-medium transition-all whitespace-nowrap ${
                     notificationEnabled
                       ? 'bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30'
                       : 'bg-violet-500/20 text-violet-300 hover:bg-violet-500/30'
