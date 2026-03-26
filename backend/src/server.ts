@@ -17,7 +17,7 @@ app.use(
       if (!requestOrigin) return callback(null, true)
       // Allow the configured origin + common dev ports
       const allowed = [
-        env.frontendOrigin,
+        ...env.frontendOrigin.split(',').map(o => o.trim()),
         'http://localhost:5173',
         'http://localhost:5174',
         'http://localhost:4173',
@@ -45,8 +45,14 @@ app.use(express.json({ limit: '10kb' }))
 // 4. Prevent HTTP Parameter Pollution
 app.use(hpp())
 
+// 5. Root endpoint
+app.get('/', (req, res) => {
+  res.send('SiagaMate API is running...')
+})
+
 app.use('/api', apiRoutes)
 
+// Global error handler
 app.use((error: unknown, _req: Request, res: Response, _next: NextFunction) => {
   const statusCode =
     typeof error === 'object' && error && 'status' in error
@@ -62,13 +68,16 @@ app.use((error: unknown, _req: Request, res: Response, _next: NextFunction) => {
   res.status(statusCode).json({ error: message })
 })
 
-async function bootstrap() {
-  await connectDatabase()
-  initFirebase()
+// Initialize database and Firebase
+connectDatabase()
+  .then(() => {
+    initFirebase()
 
-  app.listen(env.port, () => {
-    console.log(`SiagaMate API berjalan di http://localhost:${env.port}`)
+    app.listen(env.port, () => {
+      console.log(`SiagaMate API berjalan di http://localhost:${env.port}`)
+    })
   })
-}
-
-void bootstrap()
+  .catch((err) => {
+    console.error('Gagal memulai server:', err)
+    process.exit(1)
+  })
