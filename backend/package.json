@@ -1,0 +1,33 @@
+{
+  "name": "siagamate-backend",
+  "version": "1.0.0",
+  "description": "SiagaMate AI backend service",
+  "private": true,
+  "packageManager": "pnpm@10.18.0",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/server.js"
+  },
+  "dependencies": {
+    "axios": "^1.13.1",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "express-rate-limit": "^7.5.0",
+    "firebase-admin": "^13.6.0",
+    "helmet": "^8.0.0",
+    "hpp": "^0.2.3",
+    "mongoose": "^8.19.3"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.5",
+    "@types/express-mongo-sanitize": "^2.1.2",
+    "@types/hpp": "^0.2.6",
+    "@types/node": "^24.12.0",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}

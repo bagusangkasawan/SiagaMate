@@ -1,0 +1,126 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-[#09090f] text-slate-200 antialiased;
+  }
+
+  #root {
+    @apply min-h-screen;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-sans font-bold text-white leading-tight;
+  }
+
+  a {
+    @apply text-violet-400 transition-colors;
+  }
+
+  a:hover {
+    @apply text-violet-300;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(139, 92, 246, 0.3);
+    border-radius: 3px;
+  }
+
+  select {
+    color-scheme: dark;
+  }
+
+  select option {
+    background-color: #1f2937;
+    color: #ffffff;
+  }
+
+  select option:checked {
+    background: linear-gradient(#667eea, #667eea);
+    background-color: #667eea;
+    color: white;
+  }
+}
+
+@layer utilities {
+  .chat-markdown {
+    @apply prose prose-invert prose-sm max-w-none prose-headings:my-2 prose-headings:text-white prose-p:my-1 prose-p:text-slate-200 prose-li:my-0 prose-li:text-slate-300 prose-strong:text-white prose-code:rounded prose-code:bg-violet-500/20 prose-code:px-1 prose-code:text-violet-300 prose-pre:border-l-2 prose-pre:border-violet-400 prose-pre:bg-slate-900/60 prose-blockquote:border-violet-400 prose-blockquote:text-slate-300 prose-a:text-violet-300;
+  }
+
+  .animate-ticker-scroll {
+    animation: ticker-scroll 60s linear infinite;
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.3s ease-out;
+  }
+
+  .animate-fade-in-up {
+    animation: fade-in-up 0.5s ease-out;
+  }
+
+  .animate-fade-in-up.delay-1 {
+    animation-delay: 0.1s;
+    opacity: 0;
+    animation-fill-mode: forwards;
+  }
+
+  .animate-fade-in-up.delay-2 {
+    animation-delay: 0.2s;
+    opacity: 0;
+    animation-fill-mode: forwards;
+  }
+
+  .animate-fade-in-up.delay-3 {
+    animation-delay: 0.3s;
+    opacity: 0;
+    animation-fill-mode: forwards;
+  }
+}
+
+@keyframes ticker-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
