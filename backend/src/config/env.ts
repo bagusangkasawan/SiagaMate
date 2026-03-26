@@ -7,7 +7,7 @@ function getEnv(key: string, fallback = ''): string {
 }
 
 export const env = {
-  port: Number.parseInt(getEnv('PORT', '4000'), 10),
+  port: Number.parseInt(getEnv('PORT'), 10),
   frontendOrigin: getEnv('FRONTEND_ORIGIN', 'http://localhost:5173'),
   mongoUri: getEnv('MONGO_URI'),
   geminiApiKey: getEnv('GEMINI_API_KEY'),
