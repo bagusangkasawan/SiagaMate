@@ -1,7 +1,8 @@
-import type { FormEvent } from 'react'
-import { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState, type FormEvent } from 'react'
 import ReactMarkdown from 'react-markdown'
+import { Bot, Hand, Send, Trash2, X } from 'lucide-react'
 import type { ChatRecord } from '../types'
+import ConfirmModal from './ConfirmModal'
 
 interface ChatWidgetProps {
   open: boolean
@@ -11,10 +12,12 @@ interface ChatWidgetProps {
   onMessageChange: (value: string) => void
   onSubmit: (e: FormEvent<HTMLFormElement>) => void
   loading: boolean
+  onReset: () => void
 }
 
-export default function ChatWidget({ open, onToggle, history, message, onMessageChange, onSubmit, loading }: ChatWidgetProps) {
+export default function ChatWidget({ open, onToggle, history, message, onMessageChange, onSubmit, loading, onReset }: ChatWidgetProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const [isConfirmResetOpen, setIsConfirmResetOpen] = useState(false)
   const inputClass =
     'flex-1 resize-none rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:border-violet-500 focus:outline-none'
 
@@ -36,11 +39,11 @@ export default function ChatWidget({ open, onToggle, history, message, onMessage
       {/* Toggle Button */}
       {!open && (
         <button
-          className="fixed bottom-4 right-4 z-[210] flex h-14 w-14 cursor-pointer items-center justify-center rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 text-xl text-white shadow-lg shadow-violet-500/30 transition-transform hover:scale-105"
+          className="fixed bottom-4 right-4 z-[210] flex h-14 w-14 cursor-pointer items-center justify-center rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white shadow-lg shadow-violet-500/30 transition-transform hover:scale-105"
           onClick={onToggle}
           title="Chat AI"
         >
-          🤖
+          <Bot size={28} />
         </button>
       )}
 
@@ -49,25 +52,42 @@ export default function ChatWidget({ open, onToggle, history, message, onMessage
           {/* Header */}
           <div className="flex items-center justify-between border-b border-white/5 px-5 py-4">
             <div className="flex items-center gap-3">
-              <span className="text-xl">🤖</span>
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-500/20 text-violet-400">
+                <Bot size={20} />
+              </span>
               <div>
                 <h3 className="font-semibold text-white">SiagaMate AI</h3>
                 <p className="text-xs text-slate-500">Asisten Bencana</p>
               </div>
             </div>
-            <button
-              className="cursor-pointer text-slate-500 transition hover:text-white"
-              onClick={onToggle}
-            >
-              ✕
-            </button>
+            <div className="flex items-center gap-2 text-slate-500">
+              {history.length > 0 && (
+                <button
+                  type="button"
+                  className="cursor-pointer rounded p-1 transition hover:bg-white/10 hover:text-rose-400"
+                  onClick={() => setIsConfirmResetOpen(true)}
+                  title="Reset Chat"
+                >
+                  <Trash2 size={16} />
+                </button>
+              )}
+              <button
+                className="cursor-pointer p-1 transition hover:bg-white/10 hover:text-white rounded"
+                onClick={onToggle}
+                title="Tutup Widget"
+              >
+                <X size={20} />
+              </button>
+            </div>
           </div>
 
           {/* Messages */}
           <div className="flex min-h-[200px] flex-1 flex-col gap-3 overflow-y-auto p-4">
             {history.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-8 text-center">
-                <div className="mb-3 text-3xl">👋</div>
+                <div className="mb-4 flex flex-col items-center justify-center text-violet-400">
+                  <Hand size={32} />
+                </div>
                 <p className="text-sm text-slate-400">Halo! Tanya saya tentang bencana.</p>
                 <div className="mt-3 flex flex-wrap justify-center gap-2">
                   {['Evakuasi', 'P3K', 'Gempa', 'Banjir'].map((topic) => (
@@ -129,14 +149,28 @@ export default function ChatWidget({ open, onToggle, history, message, onMessage
             />
             <button
               type="submit"
-              className="cursor-pointer rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-4 text-white transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
+              className="cursor-pointer rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-4 text-white transition-opacity flex items-center justify-center disabled:cursor-not-allowed disabled:opacity-40"
               disabled={loading || !message.trim()}
             >
-              ↑
+              <Send size={18} />
             </button>
           </form>
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={isConfirmResetOpen}
+        title="Hapus Riwayat Chat"
+        message="Apakah Anda yakin ingin menghapus seluruh riwayat percakapan ini? Tindakan ini tidak dapat dibatalkan."
+        onConfirm={() => {
+          setIsConfirmResetOpen(false)
+          onReset()
+        }}
+        onCancel={() => setIsConfirmResetOpen(false)}
+        confirmLabel="Hapus"
+        cancelLabel="Batal"
+        variant="delete"
+      />
     </>
   )
 }

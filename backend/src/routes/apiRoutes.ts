@@ -281,31 +281,36 @@ router.post('/chat', requireAuth, async (req, res) => {
     return res.status(400).json({ error: 'Pesan tidak boleh kosong' })
   }
 
-  const chatResult = await askGemini(message, context)
-  const record = await ChatInteractionModel.create({
-    userId: authReq.uid!,
-    message,
-    answer: chatResult.answer,
-    provider: chatResult.provider,
-    context
-  })
-
-  // Enforce 5-message limit per user
-  if (authReq.uid) {
-    enforceChatLimit(authReq.uid).catch(err => {
-      console.error('Chat limit enforcement failed:', err)
+  try {
+    const chatResult = await askGemini(message, context)
+    const record = await ChatInteractionModel.create({
+      userId: authReq.uid!,
+      message,
+      answer: chatResult.answer,
+      provider: chatResult.provider,
+      context
     })
-  }
 
-  res.json({
-    response: {
-      id: record.id,
-      message: record.message,
-      answer: record.answer,
-      provider: record.provider,
-      createdAt: record.createdAt
+    // Enforce 5-message limit per user
+    if (authReq.uid) {
+      enforceChatLimit(authReq.uid).catch(err => {
+        console.error('Chat limit enforcement failed:', err)
+      })
     }
-  })
+
+    res.json({
+      response: {
+        id: record.id,
+        message: record.message,
+        answer: record.answer,
+        provider: record.provider,
+        createdAt: record.createdAt
+      }
+    })
+  } catch (err) {
+    console.error('Chat processing error:', err)
+    res.status(500).json({ error: 'Terjadi kesalahan saat memproses chat' })
+  }
 })
 
 /**
@@ -324,6 +329,20 @@ router.get('/chat/history', requireAuth, async (req, res) => {
   } catch (error) {
     console.error('Get chat history error:', error)
     res.status(500).json({ error: 'Gagal mengambil riwayat chat' })
+  }
+})
+
+/**
+ * DELETE /chat/history — deletes all chat interactions for the user
+ */
+router.delete('/chat/history', requireAuth, async (req, res) => {
+  const authReq = req as AuthRequest
+  try {
+    await ChatInteractionModel.deleteMany({ userId: authReq.uid })
+    res.json({ message: 'Riwayat chat berhasil dihapus' })
+  } catch (error) {
+    console.error('Delete chat history error:', error)
+    res.status(500).json({ error: 'Gagal menghapus riwayat chat' })
   }
 })
 

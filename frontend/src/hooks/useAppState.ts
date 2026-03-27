@@ -43,7 +43,7 @@ export function useAppState() {
   const notificationText = useMemo(() => {
     if (!risk) return ''
     const lvl = risk.riskLevel.toUpperCase()
-    return `⚠️ Peringatan ${lvl}: Risiko ${risk.disasterType} di ${profile.locationLabel}.`
+    return `Peringatan ${lvl}: Risiko ${risk.disasterType} di ${profile.locationLabel}.`
   }, [risk, profile.locationLabel])
 
   /* ── Load user data from backend on login ── */
@@ -197,10 +197,14 @@ export function useAppState() {
     setChatLoading(true)
     
     try {
+      const chatContext = chatHistory.length === 0 
+        ? { profile, disasterType, risk } 
+        : { history: chatHistory.slice(0, 5).reverse() }
+
       const res = await authFetch(`${API_BASE}/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: userMsg, context: { profile, disasterType, risk } }),
+        body: JSON.stringify({ message: userMsg, context: chatContext }),
       }, idToken)
       if (!res.ok) throw new Error('Chat error')
       const data = await res.json()
@@ -222,6 +226,24 @@ export function useAppState() {
       setError(err instanceof Error ? err.message : 'Gagal mengirim')
     } finally {
       setChatLoading(false)
+    }
+  }
+
+  async function handleResetChat() {
+    if (!idToken) return
+    
+    // Optimistic UI update
+    setChatHistory([])
+    setError('')
+    
+    try {
+      const res = await authFetch(`${API_BASE}/chat/history`, {
+        method: 'DELETE',
+      }, idToken)
+      
+      if (!res.ok) throw new Error('Gagal menghapus riwayat')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Gagal menghapus riwayat')
     }
   }
 
@@ -275,6 +297,7 @@ export function useAppState() {
     refreshIntelligence,
     handleRegister,
     handleChat,
+    handleResetChat,
     runSimulation,
   }
 }

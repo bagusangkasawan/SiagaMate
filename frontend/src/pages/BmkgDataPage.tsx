@@ -1,4 +1,5 @@
 import { formatBmkgDate, magClass } from '../lib/api'
+import { Radio, MapPin, FileText } from 'lucide-react'
 import type { BmkgEarthquake } from '../types'
 
 interface BmkgDataPageProps {
@@ -36,9 +37,11 @@ export default function BmkgDataPage({ earthquakes, bmkgLoading }: BmkgDataPageP
             <span className="text-sm text-slate-500">Memuat data...</span>
           </div>
         ) : earthquakes.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-center">
-            <div className="mb-3 text-4xl">📡</div>
-            <p className="text-sm text-slate-500">Tidak ada data gempa terbaru.</p>
+          <div className="flex flex-col items-center justify-center py-20 text-center text-slate-500">
+            <div className="mb-4">
+              <Radio size={48} className="text-violet-400" />
+            </div>
+            <p className="text-sm">Tidak ada data gempa terbaru.</p>
           </div>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -49,7 +52,7 @@ export default function BmkgDataPage({ earthquakes, bmkgLoading }: BmkgDataPageP
               >
                 <div className="mb-3 flex items-start justify-between gap-3">
                   <span className={`text-3xl font-bold ${magColor(magClass(eq.magnitude))}`}>
-                    M{eq.magnitude}
+                    M {eq.magnitude}
                   </span>
                   <span className="shrink-0 text-xs text-slate-500">{formatBmkgDate(eq.dateTime)}</span>
                 </div>
@@ -57,8 +60,16 @@ export default function BmkgDataPage({ earthquakes, bmkgLoading }: BmkgDataPageP
                 <p className="mb-3 font-medium text-white">{eq.region}</p>
 
                 <div className="flex flex-wrap gap-2 text-xs text-slate-500">
-                  <span className="rounded-full bg-white/5 px-2.5 py-1">📏 {eq.depth}</span>
-                  {eq.potential && <span className="rounded-full bg-white/5 px-2.5 py-1">📋 {eq.potential}</span>}
+                  <span className="rounded-full bg-white/5 px-2.5 py-1 flex items-center">
+                    <MapPin size={12} className="mr-1.5" />
+                    {eq.depth}
+                  </span>
+                  {eq.potential && (
+                    <span className="rounded-full bg-white/5 px-2.5 py-1 flex items-center">
+                      <FileText size={12} className="mr-1.5" />
+                      {eq.potential}
+                    </span>
+                  )}
                 </div>
               </div>
             ))}

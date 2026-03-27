@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useRef, useState } from 'react'
+import { Target, Globe, Waves, Radio, AlertOctagon, AlertTriangle, CheckCircle, Info, CloudSun, Check } from 'lucide-react'
 import { riskColor, API_BASE, calculateDistance } from '../lib/api'
 import type { RiskPrediction, UserProfile } from '../types'
 
@@ -188,7 +190,7 @@ export default function RiskPage({
                     <div className="h-4 w-4 animate-spin rounded-full border-2 border-violet-500/30 border-t-violet-500"></div>
                   </div>
                 )}
-                
+
                 {/* Suggestions Dropdown */}
                 {showSuggestions && suggestions.length > 0 && (
                   <div className="absolute z-50 mt-2 w-full rounded-xl border border-white/10 bg-[#0c0c14] shadow-2xl max-h-64 overflow-y-auto">
@@ -319,7 +321,9 @@ export default function RiskPage({
               </div>
             ) : !risk ? (
               <div className="flex flex-col items-center justify-center py-16 text-center">
-                <div className="mb-4 text-5xl">🎯</div>
+                <div className="mb-4 flex flex-col items-center justify-center text-violet-400">
+                  <Target size={48} />
+                </div>
                 <p className="text-sm font-medium text-slate-400 mb-2">Belum ada prediksi risiko</p>
                 <p className="text-xs text-slate-500 max-w-xs">Klik tombol "Analisis Risiko" untuk mendapatkan prediksi berdasarkan lokasi dan parameter Anda.</p>
               </div>
@@ -327,9 +331,9 @@ export default function RiskPage({
               <div className="space-y-4">
                 {/* Disaster Type Badge */}
                 <div className="flex items-center gap-2 pb-2">
-                  <span className="rounded-lg bg-violet-500/15 px-3 py-1.5 text-xs font-semibold text-violet-300">
-                    {disasterType === 'gempa-bumi' && '🌍 Gempa Bumi'}
-                    {disasterType === 'banjir' && '💧 Banjir'}
+                  <span className="rounded-lg bg-violet-500/15 px-3 py-1.5 text-xs font-semibold text-violet-300 flex items-center">
+                    {disasterType === 'gempa-bumi' && <><Globe size={14} className="mr-1.5 inline" /> Gempa Bumi</>}
+                    {disasterType === 'banjir' && <><Waves size={14} className="mr-1.5 inline" /> Banjir</>}
                   </span>
                   <span className="text-xs text-slate-500">
                     Dianalisis: {new Date(risk.generatedAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB
@@ -337,22 +341,21 @@ export default function RiskPage({
                 </div>
 
                 {/* BMKG Attribution */}
-                <div className="rounded-xl border border-blue-500/20 bg-blue-500/10 px-4 py-3 text-xs text-blue-300">
-                  <strong>📡 Data Resmi:</strong> {risk.dataSource}
+                <div className="rounded-xl border border-blue-500/20 bg-blue-500/10 px-4 py-3 text-xs text-blue-300 flex items-center">
+                  <strong className="flex items-center"><Radio size={14} className="mr-1.5" /> Data:</strong> <span className="ml-1">{risk.dataSource}</span>
                 </div>
 
                 {/* Risk Level */}
                 <div className="rounded-xl border border-white/5 bg-white/[0.02] p-4">
                   <p className="mb-2 text-xs font-medium text-slate-500">Tingkat Risiko Saat Ini</p>
                   <div className="flex items-baseline gap-2">
-                    <span className={`text-2xl font-bold ${
-                      risk.riskLevel === 'high' ? 'text-rose-400' :
-                      risk.riskLevel === 'medium' ? 'text-amber-400' :
-                      'text-emerald-400'
-                    }`}>
-                      {risk.riskLevel === 'high' ? '🔴 TINGGI' :
-                       risk.riskLevel === 'medium' ? '🟡 SEDANG' :
-                       '🟢 RENDAH'}
+                    <span className={`text-2xl font-bold flex items-center ${risk.riskLevel === 'high' ? 'text-rose-400' :
+                        risk.riskLevel === 'medium' ? 'text-amber-400' :
+                          'text-emerald-400'
+                      }`}>
+                      {risk.riskLevel === 'high' ? <><AlertOctagon size={24} className="inline mr-2 text-rose-500" /> TINGGI</> :
+                        risk.riskLevel === 'medium' ? <><AlertTriangle size={24} className="inline mr-2 text-amber-500" /> SEDANG</> :
+                          <><CheckCircle size={24} className="inline mr-2 text-emerald-500" /> RENDAH</>}
                     </span>
                   </div>
                 </div>
@@ -371,7 +374,7 @@ export default function RiskPage({
                   return isSignificant || isNearby ? (
                     <div className="rounded-xl border border-rose-500/20 bg-rose-500/10 px-4 py-4">
                       <div className="flex items-center gap-2 mb-3">
-                        <span className="text-lg">🌍</span>
+                        <Globe size={24} className="text-rose-400" />
                         <h4 className="font-semibold text-rose-300">Data Gempa BMKG</h4>
                       </div>
                       <div className="space-y-2 text-sm">
@@ -403,7 +406,7 @@ export default function RiskPage({
                   ) : (
                     <div className="rounded-xl border border-slate-500/20 bg-slate-500/10 px-4 py-4">
                       <div className="flex items-center gap-2">
-                        <span className="text-lg">ℹ️</span>
+                        <Info size={20} className="text-slate-400" />
                         <p className="text-sm text-slate-400">Tidak ada data gempa yang relevan untuk lokasi Anda</p>
                       </div>
                     </div>
@@ -412,18 +415,17 @@ export default function RiskPage({
 
                 {/* BMKG Weather Forecast - Always show for banjir for transparency */}
                 {disasterType === 'banjir' && (
-                  <div className={`rounded-xl border px-4 py-4 ${
-                    risk.bmkgData?.weatherForecast?.riskLevel === 'high' 
-                      ? 'border-amber-500/30 bg-amber-500/10' 
+                  <div className={`rounded-xl border px-4 py-4 ${risk.bmkgData?.weatherForecast?.riskLevel === 'high'
+                      ? 'border-amber-500/30 bg-amber-500/10'
                       : risk.bmkgData?.weatherForecast?.riskLevel === 'medium'
-                      ? 'border-yellow-500/30 bg-yellow-500/10'
-                      : 'border-blue-500/20 bg-blue-500/10'
-                  }`}>
+                        ? 'border-yellow-500/30 bg-yellow-500/10'
+                        : 'border-blue-500/20 bg-blue-500/10'
+                    }`}>
                     <div className="flex items-center gap-2 mb-3">
-                      <span className="text-lg">🌤️</span>
+                      <CloudSun size={24} className="text-blue-400" />
                       <h4 className="font-semibold text-blue-300">Prakiraan Cuaca BMKG</h4>
                     </div>
-                    
+
                     {/* Show risk indicators if any */}
                     {risk.bmkgData?.weatherForecast?.riskIndicators && risk.bmkgData.weatherForecast.riskIndicators.length > 0 ? (
                       <div className="mb-3 space-y-1">
@@ -435,8 +437,9 @@ export default function RiskPage({
                       </div>
                     ) : (
                       <div className="mb-3">
-                        <p className="text-sm text-slate-300">
-                          ✅ Prakiraan cuaca normal: Tidak ada hujan deras atau kondisi ekstrem yang diprediksi.
+                        <p className="text-sm text-slate-300 flex items-start">
+                          <Check size={16} className="inline mr-1.5 shrink-0 mt-0.5 text-emerald-400" />
+                          <span>Prakiraan cuaca normal: Tidak ada hujan deras atau kondisi ekstrem yang diprediksi.</span>
                         </p>
                       </div>
                     )}
@@ -448,22 +451,22 @@ export default function RiskPage({
                           .filter((f) => new Date(f.localDatetime) > new Date(risk.generatedAt))
                           .slice(0, 8)
                           .map((forecast, idx) => (
-                          <div key={idx} className="flex justify-between bg-white/5 rounded p-2">
-                            <div className="flex-1">
-                              <p className="text-slate-400">{new Date(forecast.localDatetime).toLocaleString('id-ID', {
-                                month: 'short',
-                                day: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit'
-                              })}</p>
-                              <p className="text-slate-200 font-medium">{forecast.weather}</p>
+                            <div key={idx} className="flex justify-between bg-white/5 rounded p-2">
+                              <div className="flex-1">
+                                <p className="text-slate-400">{new Date(forecast.localDatetime).toLocaleString('id-ID', {
+                                  month: 'short',
+                                  day: 'numeric',
+                                  hour: '2-digit',
+                                  minute: '2-digit'
+                                })}</p>
+                                <p className="text-slate-200 font-medium">{forecast.weather}</p>
+                              </div>
+                              <div className="text-right">
+                                <p className="text-white">{forecast.temperature}°C</p>
+                                <p className="text-slate-400 text-xs">{forecast.humidity}% RH</p>
+                              </div>
                             </div>
-                            <div className="text-right">
-                              <p className="text-white">{forecast.temperature}°C</p>
-                              <p className="text-slate-400 text-xs">{forecast.humidity}% RH</p>
-                            </div>
-                          </div>
-                        ))}
+                          ))}
                       </div>
                     ) : (
                       <div className="text-sm text-slate-400">
@@ -483,7 +486,7 @@ export default function RiskPage({
                 {disasterType === 'banjir' && risk.riskLevel === 'low' && (
                   <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-4">
                     <div className="flex items-center gap-2 mb-2">
-                      <span className="text-lg">✅</span>
+                      <Check size={24} className="text-emerald-400" />
                       <h4 className="font-semibold text-emerald-300">Status Aman</h4>
                     </div>
                     <p className="text-sm text-emerald-200">
@@ -498,7 +501,7 @@ export default function RiskPage({
                 {disasterType === 'banjir' && risk.bmkgData?.weatherWarning && !risk.bmkgData.weatherWarning.summary.toLowerCase().includes('belum tersedia') && (
                   <div className="rounded-xl border border-amber-500/20 bg-amber-500/10 px-4 py-4">
                     <div className="flex items-center gap-2 mb-3">
-                      <span className="text-lg">💧</span>
+                      <Waves size={24} className="text-amber-400" />
                       <h4 className="font-semibold text-amber-300">Peringatan Banjir BMKG</h4>
                     </div>
                     <p className="text-sm text-amber-200">{risk.bmkgData.weatherWarning.summary}</p>
@@ -516,7 +519,7 @@ export default function RiskPage({
                 {/* First Aid Checklist */}
                 <div className="border-t border-white/5 pt-4 mt-4">
                   <div className="mb-4 flex items-center gap-2">
-                    <span className="text-lg">✅</span>
+                    <Check size={24} className="text-emerald-400" />
                     <h3 className="text-sm font-semibold text-emerald-400">
                       {disasterType === 'gempa-bumi' && 'Panduan Keselamatan Gempa'}
                       {disasterType === 'banjir' && 'Panduan Keselamatan Banjir'}
@@ -524,8 +527,8 @@ export default function RiskPage({
                   </div>
                   <div className="space-y-2">
                     {risk.firstAidChecklist.map((item, idx) => (
-                      <label 
-                        key={item} 
+                      <label
+                        key={item}
                         className="flex items-start gap-3 rounded-lg border border-emerald-500/10 bg-emerald-500/5 px-3.5 py-3 text-sm text-slate-300 transition cursor-pointer hover:border-emerald-500/20 hover:bg-emerald-500/10"
                       >
                         <input type="checkbox" className="mt-0.5 accent-emerald-500 cursor-pointer" />

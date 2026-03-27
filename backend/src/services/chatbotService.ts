@@ -17,10 +17,6 @@ const SYSTEM_INSTRUCTION = {
   ]
 }
 
-function createUserMessage(message: string, context: Record<string, unknown>) {
-  return `Konteks:\n${JSON.stringify(context, null, 2)}\n\nPertanyaan pengguna:\n${message}`
-}
-
 export async function askGemini(message: string, context: Record<string, unknown>) {
   if (!env.geminiApiKey) {
     return {
@@ -30,29 +26,53 @@ export async function askGemini(message: string, context: Record<string, unknown
     }
   }
 
-  const userMessage = createUserMessage(message, context)
-  const response = await axios.post(
-    `${GEMINI_ENDPOINT}?key=${env.geminiApiKey}`,
-    {
-      systemInstruction: SYSTEM_INSTRUCTION,
-      contents: [
-        {
-          role: 'user',
-          parts: [{ text: userMessage }]
-        }
-      ]
-    },
-    {
-      timeout: 12000
+  const optimizedContext = JSON.parse(JSON.stringify(context))
+  if (
+    optimizedContext.risk?.bmkgData?.weatherForecast?.forecast &&
+    Array.isArray(optimizedContext.risk.bmkgData.weatherForecast.forecast)
+  ) {
+    optimizedContext.risk.bmkgData.weatherForecast.forecast =
+      optimizedContext.risk.bmkgData.weatherForecast.forecast.slice(0, 3)
+  }
+
+  const contextString = `\n\nKonteks Pengguna & Riwayat Chat:\n${JSON.stringify(optimizedContext, null, 2)}`
+  const dynamicSystemInstruction = {
+    parts: [
+      { text: SYSTEM_INSTRUCTION.parts[0].text + contextString }
+    ]
+  }
+
+  try {
+    const response = await axios.post(
+      `${GEMINI_ENDPOINT}?key=${env.geminiApiKey}`,
+      {
+        systemInstruction: dynamicSystemInstruction,
+        contents: [
+          {
+            role: 'user',
+            parts: [{ text: message }]
+          }
+        ]
+      },
+      {
+        timeout: 12000
+      }
+    )
+
+    const answer =
+      response?.data?.candidates?.[0]?.content?.parts?.[0]?.text ||
+      'Maaf, saya belum mendapatkan jawaban yang lengkap. Gunakan protokol evakuasi standar.'
+
+    return {
+      answer,
+      provider: 'gemini'
     }
-  )
-
-  const answer =
-    response?.data?.candidates?.[0]?.content?.parts?.[0]?.text ||
-    'Maaf, saya belum mendapatkan jawaban yang lengkap. Gunakan protokol evakuasi standar.'
-
-  return {
-    answer,
-    provider: 'gemini'
+  } catch (error) {
+    console.error('Gemini API Error:', error instanceof Error ? error.message : error)
+    return {
+      answer:
+        'Maaf, layanan AI sedang sibuk atau mengalami gangguan sementara. Harap tetap tenang, pantau informasi dari BMKG/BPBD, dan hubungi 112 jika dalam kondisi darurat.',
+      provider: 'fallback'
+    }
   }
 }

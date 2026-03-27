@@ -26,11 +26,11 @@ export default function EarthquakeTicker({ items }: { items: BmkgEarthquake[] })
       </div>
 
       {/* Ticker content */}
-      <div className="animate-ticker-scroll flex pl-24">
+      <div className="ticker-track pl-24">
         {[...items, ...items].map((eq, i) => (
-          <div className="flex shrink-0 items-center gap-3 px-6 text-sm" key={i}>
+          <div className="ticker-item flex shrink-0 items-center gap-3 px-6 text-sm" key={i}>
             <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${magColor(magClass(eq.magnitude))}`}>
-              M{eq.magnitude}
+              M {eq.magnitude}
             </span>
             <span className="text-slate-300">{eq.region}</span>
             <span className="text-slate-600">•</span>

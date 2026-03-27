@@ -2,6 +2,7 @@ import type { FormEvent } from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { API_BASE } from '../lib/api'
 import { requestNotificationPermission, hasNotificationPermission, isPushNotificationSupported } from '../lib/fcm'
+import { Settings, X } from 'lucide-react'
 import type { UserProfile } from '../types'
 
 interface LocationSuggestion {
@@ -146,9 +147,10 @@ export default function ProfileModal({
         className="relative w-full max-w-md rounded-2xl border border-white/10 bg-[#0f0f18] p-6 sm:p-8"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
         <div className="mb-6 text-center">
-          <div className="mb-3 text-3xl">⚙️</div>
+          <div className="mb-4 flex justify-center text-violet-400">
+            <Settings size={40} />
+          </div>
           <h2 className="text-xl font-semibold text-white">Atur Profil Keselamatan</h2>
           <p className="mt-2 text-sm text-slate-400">
             Informasi untuk peringatan yang lebih akurat.
@@ -325,7 +327,7 @@ export default function ProfileModal({
           onClick={onClose}
           type="button"
         >
-          ✕
+          <X size={20} />
         </button>
       </div>
     </div>

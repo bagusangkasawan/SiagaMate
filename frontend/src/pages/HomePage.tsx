@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { BellRing, Bot, AlertTriangle, Target, Zap, Brain, Satellite, Lightbulb } from 'lucide-react'
 import EarthquakeTicker from '../components/EarthquakeTicker'
 import { severityLabel } from '../lib/api'
 import type { AlertItem, BmkgEarthquake } from '../types'
@@ -51,25 +52,25 @@ export default function HomePage({ earthquakes, tickerItems }: HomePageProps) {
 
   const features = [
     {
-      icon: '🔔',
+      icon: <BellRing size={24} className="text-violet-400" />,
       title: 'Early Warning System',
       desc: 'Peringatan dini otomatis berdasarkan feed gempa, cuaca, dan peringatan BMKG real-time.',
       color: 'violet',
     },
     {
-      icon: '🤖',
+      icon: <Bot size={24} className="text-blue-400" />,
       title: 'AI First Aid Assistant',
       desc: 'Chatbot AI siaga 24/7 yang memberikan panduan pertolongan pertama khusus bencana.',
       color: 'blue',
     },
     {
-      icon: '⚠️',
+      icon: <AlertTriangle size={24} className="text-amber-400" />,
       title: 'Prediksi Risiko',
       desc: 'Analisis risiko multi-layer berbasis lokasi, data BMKG, dan profil pengguna.',
       color: 'amber',
     },
     {
-      icon: '🎯',
+      icon: <Target size={24} className="text-emerald-400" />,
       title: 'Simulasi Bencana',
       desc: 'Simulasi skenario bencana untuk pelatihan respons dan kesiapsiagaan.',
       color: 'emerald',
@@ -124,9 +125,13 @@ export default function HomePage({ earthquakes, tickerItems }: HomePageProps) {
 
             {/* Tags */}
             <div className="animate-fade-in-up delay-1 mt-8 flex flex-wrap items-center justify-center gap-2">
-              {['⚡ Early Warning', '🧠 AI Assistant', '🛰️ BMKG Feed'].map((tag) => (
-                <span key={tag} className="rounded-full border border-violet-500/20 bg-violet-500/10 px-3 py-1.5 text-xs font-medium text-violet-300">
-                  {tag}
+              {[
+                { label: 'Early Warning', icon: <Zap size={14} className="mr-1 inline" /> },
+                { label: 'AI Assistant', icon: <Brain size={14} className="mr-1 inline" /> },
+                { label: 'BMKG Feed', icon: <Satellite size={14} className="mr-1 inline" /> }
+              ].map((tag) => (
+                <span key={tag.label} className="flex items-center rounded-full border border-violet-500/20 bg-violet-500/10 px-3 py-1.5 text-xs font-medium text-violet-300">
+                  {tag.icon} {tag.label}
                 </span>
               ))}
             </div>
@@ -232,8 +237,9 @@ export default function HomePage({ earthquakes, tickerItems }: HomePageProps) {
                       </span>
                     </div>
                     <p className="mb-3 text-sm text-slate-400">{alert.message}</p>
-                    <div className="rounded-lg bg-white/5 px-3 py-2 text-xs text-slate-500">
-                      💡 {alert.action}
+                    <div className="rounded-lg bg-white/5 px-3 py-2 text-xs text-slate-500 flex items-start">
+                      <Lightbulb size={14} className="mr-1.5 mt-0.5 shrink-0 text-amber-400" /> 
+                      <span>{alert.action}</span>
                     </div>
                   </div>
                 ))}

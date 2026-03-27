@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Star, CheckCircle, ThumbsUp, AlertTriangle, AlertCircle, AlertOctagon, Gamepad2, Check, Lightbulb, Target, Save, Home, Waves, RefreshCw } from 'lucide-react'
 import type { AssessmentQuestion, AssessmentResult } from '../types'
 import { API_BASE, authFetch } from '../lib/api'
 import { useAuth } from '../hooks/useAuth'
@@ -11,7 +12,7 @@ export default function SimulationPage() {
   const [result, setResult] = useState<AssessmentResult | null>(null)
   const [questions, setQuestions] = useState<AssessmentQuestion[]>([])
   const [loading, setLoading] = useState(false)
-  const [motivationMessage, setMotivationMessage] = useState('')
+  const [motivationMessage, setMotivationMessage] = useState<React.ReactNode>('')
   const [hasSavedResult, setHasSavedResult] = useState(false)
 
   // Load last assessment result from backend on mount
@@ -104,13 +105,13 @@ export default function SimulationPage() {
     setHasSavedResult(false)
   }
 
-  function getMotivationalMessage(score: number): string {
-    if (score >= 90) return '🌟 Anda adalah rela siaga bencana! Terus jaga kesiapan ini.'
-    if (score >= 80) return '✅ Sangat baik! Beberapa hal kecil masih bisa ditingkatkan.'
-    if (score >= 70) return '👍 Cukup baik. Terus belajar dan berlatih.'
-    if (score >= 60) return '⚠️ Perlu lebih banyak persiapan. Jangan tunda lagi!'
-    if (score >= 40) return '🔴 Kesiapan masih rendah. Mulai persiapan sekarang!'
-    return '🚨 Sangat kritis! Butuh bantuan profesional dari BNPB Terdekat.'
+  function getMotivationalMessage(score: number): React.ReactNode {
+    if (score >= 90) return <><Star size={20} className="inline mr-2 text-yellow-500" /> Anda adalah rela siaga bencana! Terus jaga kesiapan ini.</>
+    if (score >= 80) return <><CheckCircle size={20} className="inline mr-2 text-emerald-500" /> Sangat baik! Beberapa hal kecil masih bisa ditingkatkan.</>
+    if (score >= 70) return <><ThumbsUp size={20} className="inline mr-2 text-blue-500" /> Cukup baik. Terus belajar dan berlatih.</>
+    if (score >= 60) return <><AlertTriangle size={20} className="inline mr-2 text-amber-500" /> Perlu lebih banyak persiapan. Jangan tunda lagi!</>
+    if (score >= 40) return <><AlertCircle size={20} className="inline mr-2 text-orange-500" /> Kesiapan masih rendah. Mulai persiapan sekarang!</>
+    return <><AlertOctagon size={20} className="inline mr-2 text-rose-500" /> Sangat kritis! Butuh bantuan profesional dari BNPB Terdekat.</>
   }
 
   function shuffleArray<T>(array: T[]): T[] {
@@ -143,7 +144,9 @@ export default function SimulationPage() {
             {/* Detailed Scores */}
             <div className="grid gap-6 md:grid-cols-2">
               <div className="rounded-xl border border-white/5 bg-white/[0.02] p-6">
-                <h3 className="mb-4 text-lg font-semibold text-white">🏚️ Kesiapan Gempa Bumi</h3>
+                <h3 className="mb-4 text-lg font-semibold text-white flex items-center">
+                  <Home size={20} className="mr-2 text-orange-400" /> Kesiapan Gempa Bumi
+                </h3>
                 <div className="mb-4">
                   <div className="mb-2 flex items-end justify-between">
                     <span className="text-3xl font-bold text-orange-400">{result.earthquakeReadiness}%</span>
@@ -155,7 +158,9 @@ export default function SimulationPage() {
                 </div>
               </div>
               <div className="rounded-xl border border-white/5 bg-white/[0.02] p-6">
-                <h3 className="mb-4 text-lg font-semibold text-white">🌊 Kesiapan Banjir</h3>
+                <h3 className="mb-4 text-lg font-semibold text-white flex items-center">
+                  <Waves size={20} className="mr-2 text-blue-400" /> Kesiapan Banjir
+                </h3>
                 <div className="mb-4">
                   <div className="mb-2 flex items-end justify-between">
                     <span className="text-3xl font-bold text-blue-400">{result.floodReadiness}%</span>
@@ -168,10 +173,11 @@ export default function SimulationPage() {
               </div>
             </div>
 
-            {/* Recommendations */}
             {result.recommendations.length > 0 && (
               <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-8">
-                <h3 className="mb-6 text-xl font-semibold text-white">💡 Rekomendasi untuk Anda</h3>
+                <h3 className="mb-6 text-xl font-semibold text-white flex items-center">
+                  <Lightbulb size={24} className="mr-3 text-amber-400" /> Rekomendasi untuk Anda
+                </h3>
                 <div className="space-y-4">
                   {result.recommendations.map((rec, idx) => (
                     <div key={idx} className="rounded-lg border-l-2 border-amber-500/50 bg-amber-500/5 px-4 py-3 text-sm text-slate-300">
@@ -185,9 +191,9 @@ export default function SimulationPage() {
             <div className="flex gap-4 justify-center pt-4">
               <button
                 onClick={handleStart}
-                className="cursor-pointer rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 px-8 py-3 font-semibold text-white shadow-lg shadow-violet-500/25 transition-all hover:shadow-xl hover:shadow-violet-500/30"
+                className="cursor-pointer rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 px-8 py-3 font-semibold text-white shadow-lg shadow-violet-500/25 transition-all hover:shadow-xl hover:shadow-violet-500/30 flex items-center"
               >
-                🔄 Uji Ulang Kesiapsiagaan
+                <RefreshCw size={18} className="mr-2" /> Uji Ulang Kesiapsiagaan
               </button>
             </div>
           </div>
@@ -211,7 +217,9 @@ export default function SimulationPage() {
 
           <div className="mt-12 rounded-2xl border border-white/5 bg-white/[0.02] p-8">
             <div className="space-y-6 text-center">
-              <div className="text-5xl">🎮</div>
+              <div className="flex justify-center text-violet-400">
+                <Gamepad2 size={48} />
+              </div>
               <h2 className="text-xl font-semibold text-white">Siap Diuji Kesiapsiagaanmu?</h2>
               <p className="text-sm text-slate-400">
                 Jawab 12 pertanyaan untuk mendapatkan analisis mendalam tentang tingkat kesiapan Anda terhadap bencana
@@ -220,17 +228,17 @@ export default function SimulationPage() {
 
               <div className="space-y-3 pt-6">
                 <div className="flex items-center gap-3 text-left text-sm text-slate-300">
-                  <span className="text-lg">✅</span> Penilaian otomatis dan objektif
+                  <span className="text-emerald-400"><Check size={18} /></span> Penilaian otomatis dan objektif
                 </div>
                 <div className="flex items-center gap-3 text-left text-sm text-slate-300">
-                  <span className="text-lg">💡</span> Rekomendasi personal untuk meningkatkan kesiapan
+                  <span className="text-amber-400"><Lightbulb size={18} /></span> Rekomendasi personal untuk meningkatkan kesiapan
                 </div>
                 <div className="flex items-center gap-3 text-left text-sm text-slate-300">
-                  <span className="text-lg">🎯</span> Dampak langsung untuk keselamatan Anda
+                  <span className="text-emerald-400"><Target size={18} /></span> Dampak langsung untuk keselamatan Anda
                 </div>
                 {user && (
                   <div className="flex items-center gap-3 text-left text-sm text-emerald-300">
-                    <span className="text-lg">💾</span> Hasil tersimpan otomatis di akun Anda
+                    <span className="text-emerald-300"><Save size={18} /></span> Hasil tersimpan otomatis di akun Anda
                   </div>
                 )}
               </div>
@@ -262,9 +270,9 @@ export default function SimulationPage() {
             <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-8 text-center">
               <div className="mb-4 text-6xl font-bold text-violet-400">{result.overallReadiness}%</div>
               <p className="text-lg font-semibold text-white mb-2">Kesiapan Keseluruhan</p>
-              <p className="text-sm text-slate-400">{motivationMessage}</p>
+              <div className="text-sm text-slate-400 flex items-center justify-center">{motivationMessage}</div>
               {user && (
-                <p className="mt-2 text-xs text-emerald-400">💾 Hasil tersimpan di akun Anda</p>
+                <p className="mt-4 flex justify-center items-center text-xs text-emerald-400"><Save size={14} className="mr-1" /> Hasil tersimpan di akun Anda</p>
               )}
             </div>
 
@@ -272,7 +280,9 @@ export default function SimulationPage() {
             <div className="grid gap-6 md:grid-cols-2">
               {/* Earthquake */}
               <div className="rounded-xl border border-white/5 bg-white/[0.02] p-6">
-                <h3 className="mb-4 text-lg font-semibold text-white">🏚️ Kesiapan Gempa Bumi</h3>
+                <h3 className="mb-4 text-lg font-semibold text-white flex items-center">
+                  <Home size={20} className="mr-2 text-orange-400" /> Kesiapan Gempa Bumi
+                </h3>
                 <div className="mb-4">
                   <div className="mb-2 flex items-end justify-between">
                     <span className="text-3xl font-bold text-orange-400">{result.earthquakeReadiness}%</span>
@@ -296,7 +306,9 @@ export default function SimulationPage() {
 
               {/* Flood */}
               <div className="rounded-xl border border-white/5 bg-white/[0.02] p-6">
-                <h3 className="mb-4 text-lg font-semibold text-white">🌊 Kesiapan Banjir</h3>
+                <h3 className="mb-4 text-lg font-semibold text-white flex items-center">
+                  <Waves size={20} className="mr-2 text-blue-400" /> Kesiapan Banjir
+                </h3>
                 <div className="mb-4">
                   <div className="mb-2 flex items-end justify-between">
                     <span className="text-3xl font-bold text-blue-400">{result.floodReadiness}%</span>
@@ -321,7 +333,9 @@ export default function SimulationPage() {
 
             {/* Recommendations */}
             <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-8">
-              <h3 className="mb-6 text-xl font-semibold text-white">💡 Rekomendasi untuk Anda</h3>
+              <h3 className="mb-6 text-xl font-semibold text-white flex items-center">
+                <Lightbulb size={24} className="mr-3 text-amber-400" /> Rekomendasi untuk Anda
+              </h3>
               <div className="space-y-4">
                 {result.recommendations.map((rec, idx) => (
                   <div key={idx} className="rounded-lg border-l-2 border-amber-500/50 bg-amber-500/5 px-4 py-3 text-sm text-slate-300">
@@ -335,15 +349,15 @@ export default function SimulationPage() {
             <div className="flex gap-4 justify-center pt-4">
               <button
                 onClick={handleRestart}
-                className="cursor-pointer rounded-full border border-white/20 px-6 py-2.5 text-sm font-semibold text-white transition-all hover:bg-white/5"
+                className="cursor-pointer rounded-full border border-white/20 px-6 py-2.5 text-sm font-semibold text-white transition-all hover:bg-white/5 flex items-center"
               >
-                ↺ Uji Ulang
+                <RefreshCw size={16} className="mr-2" /> Uji Ulang
               </button>
               <button
                 onClick={() => window.location.href = '/'}
-                className="cursor-pointer rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-violet-500/25 transition-all hover:shadow-xl hover:shadow-violet-500/30"
+                className="cursor-pointer rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-violet-500/25 transition-all hover:shadow-xl hover:shadow-violet-500/30 flex items-center"
               >
-                🏠 Kembali ke Beranda
+                <Home size={16} className="mr-2" /> Kembali ke Beranda
               </button>
             </div>
           </div>
@@ -388,7 +402,7 @@ export default function SimulationPage() {
           {/* Category Badge */}
           <div className="mb-6 flex items-center gap-2">
             <span
-              className={`inline-block rounded-full px-3 py-1 text-xs font-medium uppercase ${
+              className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium uppercase ${
                 question.category === 'earthquake'
                   ? 'bg-orange-500/20 text-orange-300'
                   : question.category === 'flood'
@@ -396,11 +410,13 @@ export default function SimulationPage() {
                     : 'bg-violet-500/20 text-violet-300'
               }`}
             >
-              {question.category === 'earthquake'
-                ? '🏚️ Gempa'
-                : question.category === 'flood'
-                  ? '🌊 Banjir'
-                  : '📋 Umum'}
+              {question.category === 'earthquake' ? (
+                <><Home size={14} /> Gempa</>
+              ) : question.category === 'flood' ? (
+                <><Waves size={14} /> Banjir</>
+              ) : (
+                <><AlertCircle size={14} /> Umum</>
+              )}
             </span>
           </div>
 

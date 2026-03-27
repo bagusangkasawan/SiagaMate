@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useEffect, useState, type ReactNode } from 'react'
 import { onAuthChange, signInWithGoogle, firebaseSignOut, getIdToken, type User } from '../lib/firebase'
 import { API_BASE } from '../lib/api'
