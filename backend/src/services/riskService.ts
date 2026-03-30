@@ -237,7 +237,7 @@ export async function predictRisk({
       }
 
       if (earthquake && earthquake.magnitude !== '0' && earthquake.magnitude !== 'N/A') {
-        riskDescription = `Gempa M${earthquake.magnitude} di ${earthquake.region}. ${earthquake.potential}`
+        riskDescription = `Gempa M ${earthquake.magnitude} di ${earthquake.region}. ${earthquake.potential}`
       }
     } else if (disasterType === 'banjir') {
       // For floods: use weather forecast analysis only

@@ -27,9 +27,9 @@ export default function HomePage({ earthquakes, tickerItems }: HomePageProps) {
       
       return {
         id: `eq-${idx}-${eq.dateTime}`,
-        title: `Gempa M${eq.magnitude} - ${eq.region}`,
+        title: `Gempa M ${eq.magnitude} - ${eq.region}`,
         severity,
-        message: `Kedalaman ${eq.depth} km. ${eq.potential}`,
+        message: `Kedalaman ${eq.depth}. ${eq.potential}`,
         category: 'Gempa Bumi',
         action: eq.felt ? `Telah dirasakan di beberapa daerah. Cek risiko Anda di peta risiko.` : 'Periksa dampak potensial di lokasi Anda.'
       }
